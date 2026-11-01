@@ -14,6 +14,14 @@ The plate has no pre-cut blade slot. You raise the spinning blade through it, so
 
 ![Underside from the back end, showing the back tab and the riving knife slot](preview/underside_iso_back.png)
 
+## Credits
+
+The lock interface and the finger-lift hole position follow [*Evolution R255 TBL Throat Plate* by Woodwork Journey](https://makerworld.com/en/models/1796905) on MakerWorld. The rest of the plate is designed from scratch from measurements of the saw.
+
+## License
+
+The reference model is licensed [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/), and this design adapts parts of it. Any shared version of this project is therefore distributed under **CC BY-NC-SA 4.0**: credit is required, commercial use is not allowed, and derivatives must use the same license. See [LICENSE](LICENSE) for the full text.
+
 ## Features
 
 - **Pre-cut riving knife slot.** You don't have to extend the kerf into a knife slot on the saw.
@@ -126,11 +134,3 @@ All dimensions are top-level variables in `throat_plate.scad`, grouped for the O
 | `rib_depth` | 17 | How far the ribs reach below the table surface (the blade top sits at 20 mm when fully lowered) |
 
 See `SPEC.md` §9 for the full parameter list and the source of each measurement.
-
-## Credits
-
-The lock interface and the finger-lift hole position follow [*Evolution R255 TBL Throat Plate* by Woodwork Journey](https://makerworld.com/en/models/1796905) on MakerWorld. The rest of the plate is designed from scratch from measurements of the saw.
-
-## License
-
-The reference model is licensed [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/), and this design adapts parts of it. Any shared version of this project is therefore distributed under **CC BY-NC-SA 4.0**: credit is required, commercial use is not allowed, and derivatives must use the same license. See [LICENSE](LICENSE) for the full text.
