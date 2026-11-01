@@ -133,4 +133,4 @@ The lock interface and the finger-lift hole position follow [*Evolution R255 TBL
 
 ## License
 
-The reference model is licensed [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/), and this design adapts parts of it. Any shared version of this project is therefore distributed under **CC BY-NC-SA 4.0**: credit is required, commercial use is not allowed, and derivatives must use the same license.
+The reference model is licensed [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/), and this design adapts parts of it. Any shared version of this project is therefore distributed under **CC BY-NC-SA 4.0**: credit is required, commercial use is not allowed, and derivatives must use the same license. See [LICENSE](LICENSE) for the full text.
