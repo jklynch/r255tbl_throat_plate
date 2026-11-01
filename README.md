@@ -4,7 +4,7 @@ A parametric, 3D-printable zero-clearance throat plate for the **Evolution R255 
 
 The plate has no pre-cut blade slot. You raise the spinning blade through it, so it cuts its own kerf and supports the workpiece right up to the blade. It fits with the riving knife installed and is meant for **90° cuts only**.
 
-> **Status:** v1.1, not yet test-printed. Print the fit-test frame first (see [Printing](#printing)).
+> **Status:** Not yet test-printed. Print the fit-test frame first (see [Printing](#printing)).
 
 ![Underside view showing the stiffening ribs, support pads, riving knife slot and lock tube](preview/underside_iso.png)
 
