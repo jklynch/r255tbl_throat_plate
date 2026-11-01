@@ -3,8 +3,12 @@
 //
 // Coordinates (model space):
 //   X = distance from the LEFT wall of the table opening (operator's left)
-//   Y = distance from the BACK wall of the table opening (riving knife end)
+//   Y = distance from the FRONT wall of the table opening (operator end)
 //   Z = 0 at the table surface, negative downward (depth = -Z)
+// This is a right-handed system: viewed from above with the operator at the
+// bottom, +X points right and +Y points away toward the riving knife.
+// SPEC.md gives many positions "from back"; they appear here as
+// from-front values (opening_len - d).
 //
 // Render a part from the command line:
 //   openscad-nightly --backend=manifold -D 'part="front"' -o front_half.stl throat_plate.scad
@@ -27,20 +31,20 @@ ledge_gap = 0.3;               // pad-to-ledge gap; 0 = rest on ledges
 rail_gap = 0.3;                // plate-to-rail gap; 0 = rest on rail
 body_depth = 7.1;              // factory plate thickness
 
-// Left ledge: [from_back_start, from_back_end, width]
-ledges_left = [[0, 171, 8], [233, 376, 9]];
-// Right ledge: [from_back_start, from_back_end, width]
-ledges_right = [[0, 59, 9], [173, 217, 4], [217, 376, 8]];
+// Left ledge: [from_front_start, from_front_end, width]
+ledges_left = [[0, 143, 9], [205, 376, 8]];
+// Right ledge: [from_front_start, from_front_end, width]
+ledges_right = [[0, 159, 8], [159, 203, 4], [317, 376, 9]];
 
 rail_x = [10.5, 27];           // from left wall
-rail_y = [13, 328];            // from back wall
+rail_y = [48, 363];            // from front wall (13-328 from back)
 rail_margin = 0.5;
 
 /* [Ribs] */
 rib_depth = 17;                // below table surface (blade is at 20)
 rib_w = 3;
 rib_x = [44.5, 52, 59.5, 67];  // rib centers, inside the reference's proven envelope
-rib_y = [40, 314];             // rib extent from back
+rib_y = [62, 336];             // rib extent from front
 rib_taper = 8;
 cross_rib_depth = 11;
 cross_rib_w = 2.5;
@@ -49,7 +53,7 @@ cross_rib_pitch = 40;
 /* [Blade and riving knife] */
 blade_strip = [31, 42];        // keep-out for ribs (blade left face at 35)
 knife_slot_x = [31, 41];
-knife_slot_y = [18, 90];
+knife_slot_y = [286, 358];     // 18-90 from back
 knife_slot_r = 1;
 
 /* [Screws and holes] */
@@ -57,13 +61,13 @@ cbore_d = 10;
 cbore_depth = 4;
 screw_clear_d = 5.5;
 level_hole_d = 5;
-// [x from left, y from back]
-holddowns = [[8, 85], [opening_wid - 8, opening_len - 17]];
-level_holes = [[8, 70], [opening_wid - 8, 27],
-               [opening_wid - 8, opening_len - 55], [8, opening_len - 55]];
+// [x from left, y from front]
+holddowns = [[8, opening_len - 85], [opening_wid - 8, 17]];
+level_holes = [[8, opening_len - 70], [opening_wid - 8, opening_len - 27],
+               [opening_wid - 8, 55], [8, 55]];
 
 /* [Lock (reference two-piece lock)] */
-lock_pos = [41.6, opening_len - 22.5];
+lock_pos = [41.6, 22.5];
 lock_cbore_d = 18.6;           // knob flange is 18.0
 lock_cbore_depth = 3;
 lock_hole_d = 16.4;            // knob shaft is 15.8
@@ -72,7 +76,7 @@ lock_tube_depth = 10;
 lock_sweep_r = 13.5;           // cam arm sweep (arm reaches r 12.6)
 
 /* [Finger hole] */
-finger_pos = [opening_wid - 30.3, opening_len - 49.8];
+finger_pos = [opening_wid - 30.3, 49.8];
 finger_d = 17.5;
 
 /* [Back tab] */
@@ -83,7 +87,7 @@ tab_top_depth = 4;
 tab_x = 52;
 
 /* [Split joint] */
-seam_y = 187.5;                // from back
+seam_y = opening_len - 187.5;  // from front (187.5 from back)
 joint_clearance = 0.15;        // total gap between the halves
 tail_x = [17, 56, 80];
 tail_neck = 8;
@@ -143,10 +147,10 @@ module knife_slot2d() {
 
 // Region belonging to the back half; tails project forward across the seam.
 module back_region2d() {
-    translate([-big, -big]) square([opening_wid + 2 * big, seam_y + big]);
+    translate([-big, seam_y]) square([opening_wid + 2 * big, opening_len - seam_y + big]);
     for (x = tail_x)
-        polygon([[x - tail_neck / 2, seam_y - eps], [x + tail_neck / 2, seam_y - eps],
-                 [x + tail_head / 2, seam_y + tail_len], [x - tail_head / 2, seam_y + tail_len]]);
+        polygon([[x - tail_neck / 2, seam_y + eps], [x + tail_neck / 2, seam_y + eps],
+                 [x + tail_head / 2, seam_y - tail_len], [x - tail_head / 2, seam_y - tail_len]]);
 }
 
 module slab(depth) { translate([0, 0, -depth]) linear_extrude(depth) children(); }
@@ -164,13 +168,14 @@ module rib(x) {
 
 module ribs() {
     for (x = rib_x) rib(x);
-    for (y = [rib_y[0] + rib_taper + cross_rib_pitch / 2 : cross_rib_pitch : rib_y[1] - rib_taper])
+    // Pitched from the back end of the ribs.
+    for (y = [rib_y[1] - rib_taper - cross_rib_pitch / 2 : -cross_rib_pitch : rib_y[0] + rib_taper])
         translate([rib_x[0], y - cross_rib_w / 2, -cross_rib_depth])
             cube([rib_x[len(rib_x) - 1] - rib_x[0], cross_rib_w, cross_rib_depth]);
 }
 
 module rib_keepouts() {
-    translate([blade_strip[0], -big, -big]) cube([blade_strip[1] - blade_strip[0], 3 * big, 2 * big]);
+    translate([blade_strip[0], -big, -big]) cube([blade_strip[1] - blade_strip[0], 3 * big + opening_len, 2 * big]);
     slab(big) offset(delta = 2) knife_slot2d();
     translate([lock_pos[0], lock_pos[1], -big]) cylinder(r = lock_sweep_r, h = big);
     translate([finger_pos[0], finger_pos[1], -big]) cylinder(d = finger_d + 4, h = big);
@@ -201,7 +206,7 @@ module plate_solid() {
     // Lock tube.
     translate([lock_pos[0], lock_pos[1], -lock_tube_depth]) cylinder(d = lock_tube_od, h = lock_tube_depth);
     // Back tab.
-    translate([tab_x - tab_w / 2, py0 - tab_len, -tab_top_depth - tab_t]) cube([tab_w, tab_len + 1, tab_t]);
+    translate([tab_x - tab_w / 2, py1 - 1, -tab_top_depth - tab_t]) cube([tab_w, tab_len + 1, tab_t]);
 }
 
 module holes() {
@@ -229,8 +234,8 @@ module fit_solid() {
         union() {
             difference() { outline2d(); offset(delta = -fit_band) outline2d(); }
             offset(delta = fit_ring) knife_slot2d();
-            translate([knife_slot_x[0], 0]) square([knife_slot_x[1] - knife_slot_x[0], knife_slot_y[1]]);
-            translate([0, seam_y - 15]) square([opening_wid, tail_len + 30]);
+            translate([knife_slot_x[0], knife_slot_y[0]]) square([knife_slot_x[1] - knife_slot_x[0], opening_len - knife_slot_y[0]]);
+            translate([0, seam_y - tail_len - 15]) square([opening_wid, tail_len + 30]);
             for (p = feature_pts) {
                 translate(p) circle(d = 20);
                 hull() { translate(p) circle(d = 4); translate([p[0] < opening_wid / 2 ? 0 : opening_wid, p[1]]) circle(d = 4); }
@@ -238,8 +243,8 @@ module fit_solid() {
         }
     }
     // Post down to the back tab.
-    translate([tab_x - tab_w / 2, py0, -tab_top_depth - tab_t]) cube([tab_w, 3, tab_top_depth + tab_t]);
-    translate([tab_x - tab_w / 2, py0 - tab_len, -tab_top_depth - tab_t]) cube([tab_w, tab_len + 1, tab_t]);
+    translate([tab_x - tab_w / 2, py1 - 3, -tab_top_depth - tab_t]) cube([tab_w, 3, tab_top_depth + tab_t]);
+    translate([tab_x - tab_w / 2, py1 - 1, -tab_top_depth - tab_t]) cube([tab_w, tab_len + 1, tab_t]);
 }
 
 module fit_test() { difference() { fit_solid(); holes(); } }

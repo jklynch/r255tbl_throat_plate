@@ -20,6 +20,7 @@ Status: **v1.1** (2026-10-21). Interview complete; first OpenSCAD model in `thro
 - **Left / right** = as seen by the operator at the front, looking toward the back.
 - Plate positions are measured from the plate edges, as on the factory plate: "from back", "from left", and so on.
 - Depth = distance below the table surface (top of plate = depth 0).
+- Model coordinates in `throat_plate.scad` are right-handed: X = from left, Y = from **front**, Z up (Z = 0 at the table surface). Positions measured "from back" in this spec appear in the model as `opening_len − d`. (Before 2026-11-01 the model used Y = from back, which made it left-handed and mirrored the printed plate left-to-right.)
 
 ## 3. Manufacturing
 
